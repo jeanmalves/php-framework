@@ -3,16 +3,20 @@ require __DIR__ . '/vendor/autoload.php';
 
 $router = new \Source\Framework\Router;
 
-$router->add('/', function () {
+$router->add('GET', '/', function () {
     return 'home';
 });
 
-$router->add('/projects', function () {
+$router->add('GET', '/projects', function () {
     return 'projects';
 });
 
-$router->add('/projects/(\d+)', function () {
-    return 'projects';
+$router->add('GET','/projects/(\d+)', function () {
+    return 'project';
 });
 
-echo $router->run();
+try {
+    echo $router->run();
+} catch (\Source\Framework\Exceptions\HttpException $e) {
+    echo json_encode(['error' => $e->getMessage()]);
+}

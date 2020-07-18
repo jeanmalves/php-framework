@@ -1,31 +1,42 @@
 <?php
 namespace Source\Framework;
 
+use Source\Framework\Exceptions\HttpException;
+
 class Router
 {
     private array $routes = [];
 
-    public function __construct()
+    public function add(string $httpMethod, string $pattern, $callback)
     {
+        $httpMethod = strtolower($httpMethod);
+        $pattern = '/^' . str_replace('/', '\/', $pattern) . '$/';
+        $this->routes[$httpMethod][$pattern] = $callback;
     }
 
-    public function add(string $pattern, $callback)
+    public function getCurrentUrl()
     {
-        $pattern = '/^' . str_replace('/', '\/', $pattern) . '$/';
-        $this->routes[$pattern] = $callback;
+        $url = $url = $_SERVER['REQUEST_URI'] ?? '/';
+        if (strlen($url) > 1) {
+            $url = rtrim($url, '/');
+        }
+        return $url;
     }
 
     public function run()
     {
-        $url = $_SERVER['REQUEST_URI'] ?? '/';
+        $url = $this->getCurrentUrl();
+        $httpMethod = strtolower($_SERVER['REQUEST_METHOD']);
 
-        foreach ($this->routes as $route => $action) {
+        if (empty($this->routes[$httpMethod])) {
+            throw new HttpException('Not found page', 404);
+        }
 
+        foreach ($this->routes[$httpMethod] as $route => $action) {
             if (preg_match($route, $url, $params)) {
-                echo '<pre> '; var_dump($params); echo '</pre>';
                 return $action($params);
             }
         }
-        return 'Not found page';
+        throw new HttpException('Not found page', 404);
     }
 }
