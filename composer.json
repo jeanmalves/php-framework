@@ -6,7 +6,9 @@
       "email": "jeanmalves@gmail.com"
     }
   ],
-  "require": {},
+  "require": {
+    "ext-json": "*"
+  },
   "autoload": {
     "psr-4": {
       "Source\\Framework\\": "src",
