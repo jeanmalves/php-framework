@@ -3,17 +3,8 @@ require __DIR__ . '/vendor/autoload.php';
 
 $router = new \Source\Framework\Router;
 
-$router->add('GET', '/', function () {
-    return 'home';
-});
-
-$router->add('GET', '/projects', function () {
-    return 'projects';
-});
-
-$router->add('GET','/projects/(\d+)', function () {
-    return 'project';
-});
+require  __DIR__ . '/config/containers.php';
+require __DIR__ . '/config/routes.php';
 
 try {
     echo $router->run();
