@@ -7,10 +7,15 @@ require  __DIR__ . '/config/containers.php';
 require __DIR__ . '/config/routes.php';
 
 try {
-    $result = $router->run();
-
     $response = new Source\Framework\Response;
-    $response($result['action'], $result['params']);
+
+    $result = $router->run();
+    $params = [
+        'container' => $container,
+        'params' => $result['params']
+    ];
+
+    $response($result['action'], $params);
 
 } catch (\Source\Framework\Exceptions\HttpException $e) {
     echo json_encode(['error' => $e->getMessage()]);
