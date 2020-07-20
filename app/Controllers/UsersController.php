@@ -5,14 +5,10 @@ use App\Models\User;
 
 class UsersController
 {
-    public function __construct($container)
+    public function show($container, $params)
     {
-        $this->container = $container;
-    }
-    public function show($id)
-    {
-        $user = new User($this->container);
-        $data = $user->get($id);
+        $user = new User($container);
+        $data = $user->get($params[1]);
         var_dump($data);
         return 'project';
     }
