@@ -5,22 +5,32 @@ use Pimple\Container;
 use Source\Framework\Router;
 use Source\Framework\Response;
 use Source\Framework\Exceptions\HttpException;
+use Source\Framework\Modules\ModuleRegistry;
 
 class App
 {
-    private Container $container;
+    private $container;
+    private $composer;
     private $middlewares = [
         'before' => [],
         'after' => []
     ];
 
-    public function __construct(Container $container = null)
+    public function __construct($composer, array $modules, Container $container = null)
     {
         $this->container = $container;
+        $this->composer = $composer;
 
         if ($this->container === null) {
-            $this->container = new Container();
+            $this->container = new Container;
         }
+
+        $this->loadRegistry($modules);
+    }
+
+    public function getContainer()
+    {
+        return $this->container;
     }
 
     public function middleware($on, $callback)
@@ -90,5 +100,20 @@ class App
             $this->container['exception'] = $e;
             echo $this->getHttpErrorHandler();
         }
+    }
+
+    private function loadRegistry($modules)
+    {
+        $moduleRegistry = new ModuleRegistry;
+
+        $moduleRegistry->setApp($this);
+        $moduleRegistry->setComposer($this->composer);
+
+        foreach ($modules as $file => $module) {
+            require $file;
+            $moduleRegistry->add(new $module);
+        }
+
+        $moduleRegistry->run();
     }
 }
