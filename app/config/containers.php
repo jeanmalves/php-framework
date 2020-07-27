@@ -1,7 +1,4 @@
 <?php
-use Pimple\Container;
-
-$container = new Container();
 
 $container['events'] = function () {
     return new Laminas\EventManager\EventManager;
